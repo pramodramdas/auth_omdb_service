@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imdb-dep
+  labels:
+    app: imdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imdb
+  template:
+    metadata:
+      labels:
+        app: imdb
+    spec:
+      containers:
+      - name: imdb
+        image: pram25/imdb
+        ports:
+        - containerPort: 4444
+        envFrom:
+        - configMapRef:
+            name: imdb-env-configmap
+        - secretRef:
+            name:  imdb-env-secrets
+        

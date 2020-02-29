@@ -1,0 +1,4 @@
+auth_service/vendor/
+auth_service/Gopkg.lock
+auth_service/Gopkg.toml
+auth_service/.vscode

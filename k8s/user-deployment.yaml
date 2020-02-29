@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-dep
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+      - name: user
+        image: pram25/user  
+        ports:
+        - containerPort: 8089
+        envFrom:
+        - configMapRef:
+            name: user-env-configmap
+        - secretRef:
+            name:  user-env-secrets
+        

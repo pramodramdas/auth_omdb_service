@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appdb: mongo-db
+  template:
+    metadata:
+      labels:
+        appdb: mongo-db
+    spec:
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: db-persistent-volume
+      containers:
+      - name: mongo-db
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+        # envFrom:
+        # - configMapRef:
+        #     name: env-configmap
+        # - secretRef:
+        #     name: env-secrets

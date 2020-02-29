@@ -1,0 +1,4 @@
+FROM golang:latest
+WORKDIR "/app"
+COPY ./auth_service ./
+EXPOSE 8089

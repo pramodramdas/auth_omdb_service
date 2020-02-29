@@ -1,0 +1,8 @@
+steps:
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['push', 'gcr.io/$PROJECT_ID/web_frontend']
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.9.8/controller.yaml']
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=<cluster-zone>'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=<cluster-name>'

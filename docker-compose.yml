@@ -1,0 +1,124 @@
+version: '3'
+services:
+  pgdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '5432:5432'
+    # volumes:
+    #   - /new_k8s/postgres-data:/var/lib/postgresql/data
+    networks:
+      - gateway
+  user:
+    build:
+      dockerfile: Dockerfile
+      context: ./user_service
+    image: pram25/user
+    environment:
+      DB_URL: ${POSTGRES_DB_URL}
+      JWT_EXPIRE_TIME: ${JWT_EXPIRE_TIME}
+      JWT_SECRET: ${JWT_SECRET}
+      HTTP_PORT: ${USER_HTTP_PORT}
+      FORGOT_PASSWORD_SECRET: ${FORGOT_PASSWORD_SECRET}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      APP_SENDER_MAIL_ID: ${APP_SENDER_MAIL_ID}
+      ZIPKIN_SERVICE_NAME: ${ZIPKIN_SERVICE_NAME}
+      ZIPKIN_REPORTER: ${ZIPKIN_REPORTER}
+      ZIPKIN_ENDPOINT: ${ZIPKIN_ENDPOINT}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    ports:
+      - '8089:8089'
+    depends_on:
+      - "pgdb"
+      - "zipkin"
+    networks:
+      - gateway
+  imdb:
+    build:
+      dockerfile: Dockerfile
+      context: ./imdb_service
+    image: pram25/imdb
+    environment:
+      ZIPKIN_ENDPOINT: ${OMDB_ZIPKIN_ENDPOINT}
+      OMDB_API_KEY: ${OMDB_API_KEY}
+      OMDB_URL: ${OMDB_URL}
+      OMDB_POSTER_URL: ${OMDB_POSTER_URL}
+      HTTP_PORT: ${OMDB_HTTP_PORT}
+      DB_URL: ${MONGO_DB_URL}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - '4444:4444'
+    depends_on:
+      - "zipkin"
+      - "mongoDB"
+    links:
+      - "mongoDB"
+    networks:
+      - gateway
+    # entrypoint: "./wait-for-it.sh mongoDB:27017"
+    entrypoint: bash -c "./wait-for-it.sh --timeout=0 mongoDB:27017 && npm run start"
+  zipkin:
+    build:
+      dockerfile: Dockerfile
+      context: ./zipkin
+    image: pram25/zipkin
+    ports:
+      - '5454:5454'
+      - '9411:9411'
+    networks:
+      - gateway
+  mongoDB:
+    image: mongo:latest
+    container_name: "mongoDB"
+    environment:
+      MONGO_DATA_DIR: /data/db
+      MONGO_LOG_DIR: /dev/null
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      # - /new_k8s/data/db:/data/db
+      - /new_k8s/docker_custom_init:/docker-entrypoint-initdb.d
+    ports:
+      - '27017:27017'
+    networks:
+      - gateway
+    command: mongod --logpath=/dev/null
+  eg:
+    build:
+      dockerfile: Dockerfile
+      context: ./gateway
+    image: pram25/eg
+    environment:
+      type: basic 
+    volumes:
+      - /auth_omdb_service_hub/gateway/config/system.config.yml:/app/config/system.config.yml
+      - /auth_omdb_service_hu/gateway/config/gateway.config.yml:/app/config/gateway.config.yml 
+    ports:
+      - '8080:8080'
+    depends_on:
+      - "imdb"
+      - "user"
+    networks:
+      - gateway
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    image: pram25/frontend
+    environment:
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+    networks:
+      - gateway
+      
+networks:
+    gateway:

@@ -1,0 +1,86 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  imdb:
+    # host: localhost # inorder to work with docker-compose remove the comment for loclahost
+    paths: '/imdb/*'
+  httpbin:
+    # host: localhost # inorder to work with docker-compose remove the comment for loclahost
+    paths: '/ip'
+  user:
+    # host: localhost # inorder to work with docker-compose remove the comment for loclahost
+    paths: '/user/*'
+  frontend:
+    paths: '/*'
+serviceEndpoints:
+  imdbService:
+    url: 'http://imdb:4444' #replace imdb with localhost when working without docker-compose
+  userService:
+    url: 'http://user:8089' #replace imdb with localhost when working without docker-compose
+  frontendService:
+    url: 'http://frontend:3000' #replace imdb with localhost when working without docker-compose 
+  httpbin:
+    url: 'https://httpbin.org'
+policies:
+  - basic-auth
+  - cors
+  - proxy
+  - jwt
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - rate-limit
+  - request-transformer
+pipelines:
+  - name: httpbin
+    apiEndpoints:
+      - httpbin
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+      - proxy:
+          - action:
+              serviceEndpoint: httpbin 
+              changeOrigin: true
+  - name: imdb
+    apiEndpoints:
+      - imdb
+    policies:
+      - jwt:
+        - action:
+            secretOrPublicKey: dsdshbj
+            checkCredentialExistence: false
+            jwtExtractor: header
+            jwtExtractorField: token
+      - request-transformer:
+        - action:
+            headers:
+              add:
+                email: req.user.Email
+                role: req.user.Role
+      # - expression:
+      #     - action:
+      #         jscode: >
+      #               req.header.token = req.user.Email
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: imdbService
+  - name: user
+    apiEndpoints:
+      - user
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: userService
+  - name: frontend
+    apiEndpoints:
+      - frontend
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: frontendService

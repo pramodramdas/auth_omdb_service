@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-dep
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: frontend
+        image: pram25/frontend
+        env:
+        - name: PORT
+          value: "3000"
+        ports:
+        - containerPort: 3000
+        
