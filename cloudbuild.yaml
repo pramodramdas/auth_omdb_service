@@ -6,4 +6,3 @@ steps:
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=asia-south1-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=standard-cluster-1'
-  - 'KUBECONFIG=/workspace/othercluster-kubeconfig'
