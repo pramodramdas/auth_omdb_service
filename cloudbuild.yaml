@@ -1,5 +1,5 @@
 steps:
-- name: 'gcr.io/$PROJECT_ID/wget'
+- name: 'gcr.io/cloud-builders/wget'
   args: ['https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.9.8/kubeseal-linux-amd64', '-O', 'kubeseal']
 - name: 'ubuntu'
   args: ['install', '-m', '755', 'kubeseal', '/usr/local/bin/kubeseal']
