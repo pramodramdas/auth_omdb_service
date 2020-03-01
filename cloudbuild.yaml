@@ -2,6 +2,12 @@ steps:
 - name: 'gcr.io/cloud-builders/kubectl'
   args: ['apply', '-f', 'https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.9.8/controller.yaml']
 - name: 'gcr.io/cloud-builders/kubectl'
+  entrypoint: 'bash'
+  args: ['-c', 'echo hello $$CLOUDSDK_CONTAINER_CLUSTER']
+  env:
+    - 'CLOUDSDK_CONTAINER_CLUSTER=standard-cluster-2'
+    - 'KUBECONFIG=/workspace/othercluster-kubeconfig'
+- name: 'gcr.io/cloud-builders/kubectl'
   args: ['apply', '-f', 'k8s/']  
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
