@@ -31,8 +31,10 @@ services:
       ZIPKIN_ENDPOINT: ${ZIPKIN_ENDPOINT}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      GRPC_PORT: ${GRPC_PORT}
     ports:
       - '8089:8089'
+    entrypoint: bash -c "./wait-for-it.sh --timeout=0 pgdb:5432 && go run main.go"
     depends_on:
       - "pgdb"
       - "zipkin"
@@ -51,17 +53,21 @@ services:
       HTTP_PORT: ${OMDB_HTTP_PORT}
       DB_URL: ${MONGO_DB_URL}
       DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_VALIDATION: ${JWT_VALIDATION}
+      GRPC_SERVER_ADDR: ${GRPC_SERVER_ADDR}
     ports:
       - '4444:4444'
+    entrypoint: bash -c "./wait-for-it.sh --timeout=0 mongodb:27017 && npm run start"
     depends_on:
+      - "user"
       - "zipkin"
-      - "mongoDB"
+      - "mongodb"
     links:
-      - "mongoDB"
+      - "mongodb"
     networks:
       - gateway
     # entrypoint: "./wait-for-it.sh mongoDB:27017"
-    entrypoint: bash -c "./wait-for-it.sh --timeout=0 mongoDB:27017 && npm run start"
   zipkin:
     build:
       dockerfile: Dockerfile
@@ -72,9 +78,9 @@ services:
       - '9411:9411'
     networks:
       - gateway
-  mongoDB:
+  mongodb:
     image: mongo:latest
-    container_name: "mongoDB"
+    container_name: "mongodb"
     environment:
       MONGO_DATA_DIR: /data/db
       MONGO_LOG_DIR: /dev/null
@@ -82,13 +88,14 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      # - /new_k8s/data/db:/data/db
-      - /new_k8s/docker_custom_init:/docker-entrypoint-initdb.d
+      # - ./data/db:/data/db
+      - ./docker_custom_init:/docker-entrypoint-initdb.d
     ports:
       - '27017:27017'
     networks:
       - gateway
-    command: mongod --logpath=/dev/null
+    ## command: mongod --logpath=/dev/null
+    ## entrypoint: bash -c "mongod --logpath=/dev/null"
   eg:
     build:
       dockerfile: Dockerfile
@@ -97,8 +104,8 @@ services:
     environment:
       type: basic 
     volumes:
-      - /auth_omdb_service_hub/gateway/config/system.config.yml:/app/config/system.config.yml
-      - /auth_omdb_service_hu/gateway/config/gateway.config.yml:/app/config/gateway.config.yml 
+      - ./gateway/config/system.config.yml:/app/config/system.config.yml
+      - ./gateway/config/gateway.config.yml:/app/config/gateway.config.yml 
     ports:
       - '8080:8080'
     depends_on:

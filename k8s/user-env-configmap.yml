@@ -12,5 +12,6 @@ data:
   ZIPKIN_ENDPOINT: zipkin-service:5454 
   ADMIN_EMAIL: abc@gmail.com
   ADMIN_PASSWORD: bbb
+  GRPC_PORT: '50051'
 
   

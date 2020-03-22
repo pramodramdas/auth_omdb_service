@@ -6,7 +6,12 @@ spec:
   type: NodePort
   ports:
     - port: 8089
+      name: http
       targetPort: 8089
       nodePort: 31520
+    - port: 50051
+      name: grpc
+      targetPort: 50051
+      nodePort: 31522
   selector:
     app: user

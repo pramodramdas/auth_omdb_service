@@ -19,6 +19,7 @@ spec:
         image: pram25/user  
         ports:
         - containerPort: 8089
+        - containerPort: 50051
         envFrom:
         - configMapRef:
             name: user-env-configmap

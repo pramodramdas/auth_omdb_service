@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package grpc_service;
+
+option go_package = "authpb";
+
+message tokenValidateRequest {
+    string token = 1;
+}
+
+message tokenValidateResponse {
+    bool Success = 1;
+    string Email = 2;
+}
+
+service AuthService {
+    rpc Validate(tokenValidateRequest) returns (tokenValidateResponse) {};
+}

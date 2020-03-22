@@ -14,6 +14,7 @@ import (
 	zipkinHttpMiddleware "github.com/openzipkin/zipkin-go/middleware/http"
 	config "github.com/pramod/auth_service/config"
 	controllers "github.com/pramod/auth_service/controllers"
+	server "github.com/pramod/auth_service/grpc_service/server"
 	allInt "github.com/pramod/auth_service/inter"
 	models "github.com/pramod/auth_service/models"
 	util "github.com/pramod/auth_service/utils"
@@ -114,5 +115,11 @@ func main() {
 	appRouter.HandleFunc("/editUser", controllers.EditUser).Methods("PUT")
 	appRouter.HandleFunc("/changePassword", controllers.ChangePassword).Methods("POST")
 	// appRouter.HandleFunc("/test", controllers.Home).Methods("GET")
-	http.ListenAndServe(os.Getenv("HTTP_HOST")+":"+os.Getenv("HTTP_PORT"), handlers.CORS(allowedHeaders, allowedOrigins, allowedMethods)(router))
+	go func() {
+		log.Fatal(http.ListenAndServe(os.Getenv("HTTP_HOST")+":"+os.Getenv("HTTP_PORT"), handlers.CORS(allowedHeaders, allowedOrigins, allowedMethods)(router)))
+	}()
+	go func() {
+		log.Fatal(server.StartGrpcServer())
+	}()
+	select {}
 }
