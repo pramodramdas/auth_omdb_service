@@ -1,5 +1,8 @@
 # auth_omdb_service
 
+There are three methods of validating json tokens
+* Through api gateway, this project uses express-gateway as api gateway.  
+
 
 ### Local dev using docker compose
 
@@ -7,7 +10,7 @@
 
 2. docker-compose up
 
-Note: change image: pram25/image_name to your docker repository and run "docker-compose push" so that images cn be pulled in further process(kubernetes)
+**Note**: change image: pram25/image_name to your docker repository and run "docker-compose push" so that images cn be pulled in further process(kubernetes)
 
 ### Local kubernetes using minikube
 
@@ -46,7 +49,7 @@ when you excecute above commands your kubernet cluster should be up and running,
 ```
 4. Now deploy your k8s  
 
-Note: **cloudbuild.xml** does not build dockers while deploying to kubernetes, so it is important to build manully and pushing to your dockerhub repository ("docker-compose push"). to automate deployment refer https://github.com/pramodramdas/gcp_web 
+**Note**: **cloudbuild.xml** does not build dockers while deploying to kubernetes, so it is important to build manully and pushing to your dockerhub repository ("docker-compose push"). to automate deployment refer https://github.com/pramodramdas/gcp_web 
 
 docker_custom_init -> init-mongo.js is for creating default admin user and this code only demonstrates for development not production.
 "user" and "pwd" should be same as **MONGO_INITDB_ROOT_USERNAME** and **MONGO_INITDB_ROOT_PASSWORD**
