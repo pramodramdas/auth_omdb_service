@@ -1,8 +1,17 @@
 # auth_omdb_service
 
-There are three methods of validating json tokens
-* Through api gateway, this project uses express-gateway as api gateway.  
+There are three methods of validating json tokens by changing JWT_VALIDATION for imdb service.
+* **JWT_VALIDATION=self** then imdb service will validate token by itself.  
+  
+![self](https://github.com/pramodramdas/auth_omdb_service/blob/master/images/gateway.png)  
 
+* **JWT_VALIDATION=grpc** then grpc client in imdb service will pass token to grpc server in auth service for validation.  
+  
+![grpc](https://github.com/pramodramdas/auth_omdb_service/blob/master/images/grpc_auth.png)  
+
+* **JWT_VALIDATION** if anything other than "self" and "grpc" then api gateway will validate token for all the services
+  
+![gateway](https://github.com/pramodramdas/auth_omdb_service/blob/master/images/gateway.png)  
 
 ### Local dev using docker compose
 
