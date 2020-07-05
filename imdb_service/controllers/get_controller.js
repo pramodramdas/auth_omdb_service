@@ -26,7 +26,7 @@ const getFavoriteMovies = async (req, res) => {
     }
 }
 
-const checkFavorite = (req, res) => {
+const checkFavorite = async (req, res) => {
     try {
         let { imdbIDs } = req.query
         let { email } = req.headers
@@ -57,12 +57,12 @@ const checkFavorite = (req, res) => {
     }
 }
 
-const getMovieInfo = (req, res) => {
+const getMovieInfo = async (req, res) => {
     try {
-        let {title, year, imdbID, plot} = req.query
+        let {title, year, plot} = req.query
         let tracer = getTracer()
 
-        if(!title && !imdbID)
+        if(!title)
             return res.json({success:true, msg:"title or imdbID madatory"})
         
         let omdbUrl = `${process.env.OMDB_URL}?apikey=${process.env.OMDB_API_KEY}`
@@ -71,8 +71,6 @@ const getMovieInfo = (req, res) => {
             omdbUrl = `${omdbUrl}&t=${title}`
         if(year)
             omdbUrl = `${omdbUrl}&y=${year}`
-        if(imdbID)
-            omdbUrl = `${omdbUrl}&apikey=${imdbID}`
         if(plot)
             omdbUrl = `${omdbUrl}&plot=${plot}`
 
