@@ -4,7 +4,7 @@
 There are three methods of validating json tokens by changing JWT_VALIDATION for imdb service.
 * **JWT_VALIDATION=self** then imdb service will validate token by itself.  
   
-![self](https://github.com/pramodramdas/auth_omdb_service/blob/master/images/gateway.png)  
+![self](https://github.com/pramodramdas/auth_omdb_service/blob/master/images/self.png)  
 
 * **JWT_VALIDATION=grpc** then grpc client in imdb service will pass token to grpc server in auth service for validation.  
   
