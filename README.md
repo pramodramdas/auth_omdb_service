@@ -1,4 +1,5 @@
 # auth_omdb_service
+#### This is simple microservices architecture with omdb service(nodejs), auth service(golang) and various other tools like zipkin, apigateway, etc 
 
 There are three methods of validating json tokens by changing JWT_VALIDATION for imdb service.
 * **JWT_VALIDATION=self** then imdb service will validate token by itself.  
